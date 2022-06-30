@@ -44,20 +44,23 @@
             </table>
         </div>
     </div>
-    <div class="fixed flex inset-0 bg-black bg-opacity-30" v-if="showCards">
+    <div class="fixed flex inset-0 bg-black bg-opacity-30" @click.self="toggleFlashCards()" v-if="showCards">
         <button class="px-3" @click="itemsController.prev()">&lt;</button>
 
         <div class="md:w-1/3 w-full h-44 m-auto rounded-md bg-slate-100 flex px-10 py-6 text-2xl text-center relative"
             @click="frontShow = !frontShow">
-            <span class="text-sm absolute top-2 left-2">
-                {{ flashcardPosition + 1 }} / {{ items.length + 1 }}
-            </span>
-            <button class="absolute top-2 right-2 text-sm" @click="toggleFlashCards()">x</button>
-            <div class="m-auto">
-                <p class="text-sm absolute top-2 w-full left-0">
+            <div class="absolute top-1 left-0 right-0 flex px-3">
+                <span class="text-sm">
+                    {{ flashcardPosition + 1 }} / {{ items.length + 1 }}
+                </span>
+                <p class="text-sm text-center grow">
                     <span v-if="frontShow">Front</span>
                     <span v-else>Back</span>
                 </p>
+                <button class="text-sm" @click="toggleFlashCards()">x</button>
+            </div>
+            <div class="m-auto">
+
                 <div v-if="frontShow">
                     {{ items[flashcardPosition]?.front }}
                 </div>
@@ -151,8 +154,8 @@ const toggleFlashCards = _ => showCards.value = !showCards.value
 
 const itemsController = {
     next: _ => {
-        if(onePress.value) {
-            if(frontShow.value) {
+        if (onePress.value) {
+            if (frontShow.value) {
                 frontShow.value = false
             } else {
                 frontShow.value = true

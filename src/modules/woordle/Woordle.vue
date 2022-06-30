@@ -6,24 +6,25 @@
         <div>
             <div v-for="i in maxTries" class="flex gap-1 mt-2">
                 <div v-for="ind in letters" class="grow h-16 border border-gray rounded-md flex"
-                    :class="{ 'bg-green-500': (tries?.[i - 1]?.[ind - 1]?.correct === 1), 'bg-yellow-300': (tries?.[i - 1]?.[ind - 1]?.correct === 2) }">
+                    :class="{ 'bg-green-500': (tries?.[i - 1]?.[ind - 1]?.correct === 1), 'bg-yellow-300': (tries?.[i - 1]?.[ind - 1]?.correct === 2), 'bg-gray-400': (tries?.[i - 1]?.[ind - 1]?.correct === 3) }">
                     <span class="m-auto text-xl">{{ tries?.[i - 1]?.[ind - 1]?.letter }}</span>
                 </div>
             </div>
         </div>
-        <div class="grid grid-cols-2 gap-5 my-2">
-            <button class="bg-slate-100 rounded-md px-2 py-1" @click="getWords()">Get Word</button>
-            <button class="bg-slate-100 rounded-md px-2 py-1" @click="removeLetter()">backspace</button>
+        <div class="bg-slate-100 mb-24 mt-2">
+            <div class="grid grid-cols-2 gap-5 my-2 p-3">
+            <button class="bg-blue-100 rounded-md px-2 py-1" @click="getWords()">Get Word</button>
+            <button class="bg-blue-100 rounded-md px-2 py-1" @click="removeLetter()">backspace</button>
         </div>
-        <div class="bg-slate-100 mb-24 mt-2 py-10">
             <div class="md:w-1/3">
                 <div v-for="row in keyboardLayout" class="text-center mt-2 flex justify-center gap-1">
                     <button v-for="key in row" @click="addLetter(key)"
                         class="border border-slate-400 w-8 py-2 rounded-md"
-                        :class="{ 'bg-green-500 border-green-500': (lettersCorrect[key] === 1), 'bg-yellow-300 border-yellow-300': (lettersCorrect[key] === 2) }">
+                        :class="{ 'bg-green-500 border-green-500': (lettersCorrect[key] === 1), 'bg-yellow-300 border-yellow-300': (lettersCorrect[key] === 2), 'bg-gray-400': (lettersCorrect[key] === 3) }">
                         {{ key }}
                     </button>
                 </div>
+                <button class="fixed top-0 right-0 text-xs opacity-10" @click="showWord()">cheat</button>
             </div>
         </div>
     </div>
@@ -92,8 +93,13 @@ const reset = _ => {
     inputValue.value = ''
     atTry.value = 0
     lettersCorrect.value = {}
+    guessedWord.value = false
     setLetterArray()
 
+}
+
+const showWord = _ => {
+    alert(`Cheater ;). Het woord is: ${word.value}`)
 }
 
 const alertText = ref('')
@@ -120,20 +126,29 @@ const setLetterArray = _ => {
 }
 
 const checkLetters = _ => {
-    if (!words.value.includes(inputValue.value)) {
+    if (!words.value.includes(inputValue.value) && !(inputValue.value.substring(0,3) === 'qqq')) {
         addAlert(`this isn't a word`)
         return false
     }
 
     const letters = Array.from(inputValue.value)
     const corrWord = Array.from(word.value)
+
+    let checkedLetters = []
+        
+
     letters.forEach((letter, index) => {
         if (letter === corrWord[index]) {
             tries.value[atTry.value][index].correct = 1
             lettersCorrect.value[letter] = 1
-        } else if (corrWord.includes(letter)) {
+        } else if (corrWord.includes(letter) && !checkedLetters.includes(letter)) {
+            checkedLetters.push(letter)
+
             tries.value[atTry.value][index].correct = 2
             lettersCorrect.value[letter] = 2
+        } else {
+            tries.value[atTry.value][index].correct = 3
+            lettersCorrect.value[letter] = 3
         }
     })
     atTry.value++
