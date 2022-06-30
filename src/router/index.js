@@ -29,12 +29,12 @@ const router = createRouter({
         },
         {
             path: '/flashcards',
-            name: 'Flashcards',
+            name: 'flashcards',
             component: () => import('../modules/flashcards/FlashCards.vue')
         },
         {
             path: '/woordle',
-            name: 'Woordle',
+            name: 'woordle',
             component: () => import('../modules/woordle/Woordle.vue')
         }
     ]

@@ -3,17 +3,17 @@
         <div class="px-10">
             Submit your flashcards
             <input type="text" class="border border-gray block my-5 px-2 py-1" v-model="splitToken">
-            <textarea name="" id="" cols="90" rows="10" v-model="inputItems"
-                class="border border-gray block"></textarea>
-             <label
-                    class="w-64 flex flex-col items-center py-2 bg-white text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue-600 hover:text-white ease duration-200">
-                    <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path
-                            d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
-                    </svg>
-                    <span class="mt-2 text-base leading-normal">Select a file</span>
-                    <input type='file' @change="detectFile($event)" class="hidden" />
-                </label>
+            <textarea name="" id="" v-model="inputItems"
+                class="border border-gray block w-full md:w-1/2 h-20"></textarea>
+            <label
+                class="w-64 flex flex-col items-center py-2 bg-white text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue-600 hover:text-white ease duration-200">
+                <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path
+                        d="M16.88 9.1A4 4 0 0 1 16 17H5a5 5 0 0 1-1-9.9V7a3 3 0 0 1 4.52-2.59A4.98 4.98 0 0 1 17 8c0 .38-.04.74-.12 1.1zM11 11h3l-4-4-4 4h3v3h2v-3z" />
+                </svg>
+                <span class="mt-2 text-base leading-normal">Select a file</span>
+                <input type='file' @change="detectFile($event)" class="hidden" />
+            </label>
             <div class="flex gap-10 mt-4">
                 <button class="bg-slate-100 rounded-md py-2 px-3 hover:bg-slate-50" @click="createCards()"> create
                     cards</button>
@@ -111,16 +111,20 @@ const shuffleCards = _ => {
 }
 
 function preventZoom(e) {
-    var t2 = e.timeStamp;
-    var t1 = e.currentTarget.dataset.lastTouch || t2;
-    var dt = t2 - t1;
-    var fingers = e.touches.length;
-    e.currentTarget.dataset.lastTouch = t2;
+    try {
+        var t2 = e.timeStamp;
+        var t1 = e.currentTarget.dataset.lastTouch || t2;
+        var dt = t2 - t1;
+        var fingers = e.touches.length;
+        e.currentTarget.dataset.lastTouch = t2;
 
-    if (!dt || dt > 500 || fingers > 1) return; // not double-tap
+        if (!dt || dt > 500 || fingers > 1) return; // not double-tap
 
-    e.preventDefault();
-    e.target.click();
+        e.preventDefault();
+        e.target.click();
+    } catch (error) {
+
+    }
 }
 
 onMounted(() => {
