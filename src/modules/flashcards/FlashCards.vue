@@ -3,6 +3,10 @@
         <div class="px-10">
             Submit your flashcards
             <input type="text" class="border border-gray block my-5 px-2 py-1" v-model="splitToken">
+            <div>
+                <label for="onePress">1 Click Show/Next</label>
+                <input type="checkbox" name="" id="onePress" class="block" v-model="onePress">
+            </div>
             <textarea name="" id="" v-model="inputItems"
                 class="border border-gray block w-full md:w-1/2 h-20"></textarea>
             <label
@@ -50,6 +54,10 @@
             </span>
             <button class="absolute top-2 right-2 text-sm" @click="toggleFlashCards()">x</button>
             <div class="m-auto">
+                <p class="text-sm absolute top-2 w-full left-0">
+                    <span v-if="frontShow">Front</span>
+                    <span v-else>Back</span>
+                </p>
                 <div v-if="frontShow">
                     {{ items[flashcardPosition]?.front }}
                 </div>
@@ -75,6 +83,8 @@ const items = ref([])
 const frontShow = ref(true)
 
 const flashcardPosition = ref(0)
+
+const onePress = ref(false)
 
 const showCards = ref(false)
 
@@ -141,8 +151,17 @@ const toggleFlashCards = _ => showCards.value = !showCards.value
 
 const itemsController = {
     next: _ => {
-        frontShow.value = true
-        flashcardPosition.value++
+        if(onePress.value) {
+            if(frontShow.value) {
+                frontShow.value = false
+            } else {
+                frontShow.value = true
+                flashcardPosition.value++
+            }
+        } else {
+            frontShow.value = true
+            flashcardPosition.value++
+        }
     },
     prev: _ => {
         frontShow.value = true
