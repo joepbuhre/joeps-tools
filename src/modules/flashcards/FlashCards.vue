@@ -1,5 +1,5 @@
 <template>
-    <div class="md:grid grid-cols-2" @keydown="detect($event)" v-if="!showCards">
+    <div class="md:grid grid-cols-2 text-left" @keydown="detect($event)" v-if="!showCards">
         <div class="px-10">
             Submit your flashcards
             <input type="text" class="border border-gray block my-5 px-2 py-1" v-model="splitToken">
@@ -47,7 +47,7 @@
     <div class="fixed flex inset-0 bg-black bg-opacity-30" @click.self="toggleFlashCards()" v-if="showCards">
         <button class="px-3" @click="itemsController.prev()">&lt;</button>
 
-        <div class="md:w-1/3 w-full h-44 m-auto rounded-md bg-slate-100 flex px-10 py-6 text-2xl text-center relative"
+        <div style="min-height: 11rem;" class="md:w-1/3 w-full h-auto m-auto rounded-md bg-slate-100 flex px-10 py-6 text-2xl text-center relative"
             @click="frontShow = !frontShow">
             <div class="absolute top-1 left-0 right-0 flex px-3">
                 <span class="text-sm">
