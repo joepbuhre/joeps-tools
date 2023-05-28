@@ -4,8 +4,12 @@
             Submit your flashcards
             <input type="text" class="border border-gray block my-5 px-2 py-1" v-model="splitToken">
             <div>
+                <input type="checkbox" name="" id="onePress" class="mr-2" v-model="onePress">
                 <label for="onePress">1 Click Show/Next</label>
-                <input type="checkbox" name="" id="onePress" class="block" v-model="onePress">
+            </div>
+            <div>
+                <input type="checkbox" name="" id="highlighted" class="mr-2" v-model="showOnlyHighlight">
+                <label for="highlighted">Show only highlighted</label>
             </div>
             <textarea name="" id="" v-model="inputItems"
                 class="border border-gray block w-full md:w-1/2 h-20"></textarea>
@@ -48,10 +52,10 @@
         <button class="px-3" @click="itemsController.prev()">&lt;</button>
 
         <div style="min-height: 11rem;" class="md:w-1/3 w-full h-auto m-auto rounded-md bg-slate-100 flex px-10 py-6 text-2xl text-center relative"
-            @click="frontShow = !frontShow">
+            @click.self="frontShow = !frontShow">
             <div class="absolute top-1 left-0 right-0 flex px-3">
                 <span class="text-sm">
-                    {{ flashcardPosition + 1 }} / {{ items.length + 1 }}
+                    {{ getPosition + 1 }} / {{ getCards.length + 1 }}
                 </span>
                 <p class="text-sm text-center grow">
                     <span v-if="frontShow">Front</span>
@@ -62,11 +66,14 @@
             <div class="m-auto">
 
                 <div v-if="frontShow">
-                    {{ items[flashcardPosition]?.front }}
+                    {{ getCards[getPosition]?.front }}
                 </div>
                 <div v-if="!frontShow">
-                    {{ items[flashcardPosition]?.back }}
+                    {{ getCards[getPosition]?.back }}
                 </div>
+            </div>
+            <div class="absolute bottom-2 left-0 right-0">
+                <button @click="hightlightItem">&#9825;</button>
             </div>
         </div>
         <button class="px-3" @click="itemsController.next()">&gt;</button>
@@ -75,21 +82,41 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
 const inputItems = ref('')
 
 const splitToken = ref(';')
 
 const items = ref([])
+const highlightedItems = ref([])
 
 const frontShow = ref(true)
 
 const flashcardPosition = ref(0)
+const highlightedPosition = ref(0)
 
 const onePress = ref(false)
 
 const showCards = ref(false)
+
+const showOnlyHighlight = ref(false)
+
+const getCards = computed(() => {
+    if(showOnlyHighlight.value === false) {
+        return items.value
+    } else {
+        return highlightedItems.value
+    }
+})
+
+const getPosition = computed(() => {
+    if(showOnlyHighlight.value === false) {
+        return flashcardPosition.value
+    } else {
+        return highlightedPosition.value
+    }
+})
 
 const detectFile = e => {
     const reader = new FileReader()
@@ -152,29 +179,61 @@ onBeforeUnmount(() => {
 })
 const toggleFlashCards = _ => showCards.value = !showCards.value
 
+const flashPosition = () => {
+    if(showOnlyHighlight.value === false) {
+        return flashcardPosition
+    } else {
+        return highlightedPosition
+    }
+}
+
 const itemsController = {
     next: _ => {
+        if(getPosition.value + 1 > getCards.value.length ) {
+            console.log('reached the end')
+            return false;
+        }
         if (onePress.value) {
             if (frontShow.value) {
                 frontShow.value = false
             } else {
                 frontShow.value = true
-                flashcardPosition.value++
+                flashPosition().value++
+                
             }
         } else {
             frontShow.value = true
-            flashcardPosition.value++
+            flashPosition().value++
         }
     },
     prev: _ => {
-        frontShow.value = true
-        flashcardPosition.value--
+        if (onePress.value) {
+            if (frontShow.value) {
+                frontShow.value = false
+                flashPosition().value--
+            } else {
+                frontShow.value = true
+            }
+        } else {
+            frontShow.value = true
+            flashPosition().value--
+        }
     },
     toggle: _ => {
         frontShow.value = !frontShow.value
     }
 }
 
+const hightlightItem = () => {
+    const item = getCards.value[getPosition.value]
+    const existIndex = highlightedItems.value.findIndex(el => el.front === item.front)
+
+    if(existIndex >= 0) {
+        highlightedItems.value.splice(existIndex, 1)
+    } else {
+        highlightedItems.value.push(item)
+    }
+}
 
 const detect = (event = KeyboardEvent) => {
     event.stopPropagation()
@@ -191,6 +250,10 @@ const detect = (event = KeyboardEvent) => {
 
     if (event.code === 'Escape' && showCards.value === true) {
         toggleFlashCards()
+    }
+
+    if (event.code === 'KeyH' || event.code === 'KeyA') {
+        hightlightItem()
     }
 }
 
