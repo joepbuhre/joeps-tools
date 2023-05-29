@@ -12,6 +12,7 @@
                 <label for="highlighted">Show only highlighted</label>
             </div>
             <textarea name="" id="" v-model="inputItems"
+                v-show="false"
                 class="border border-gray block w-full md:w-1/2 h-20"></textarea>
             <label
                 class="w-64 flex flex-col items-center py-2 bg-white text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:bg-blue-600 hover:text-white ease duration-200">
