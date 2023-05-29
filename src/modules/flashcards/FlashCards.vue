@@ -11,6 +11,10 @@
                 <input type="checkbox" name="" id="highlighted" class="mr-2" v-model="showOnlyHighlight">
                 <label for="highlighted">Show only highlighted</label>
             </div>
+            <div>
+                <input type="checkbox" name="" id="autoClick" class="mr-2" v-model="autoClick">
+                <label for="autoClick">AutoClick to next item every 3s</label>
+            </div>
             <textarea name="" id="" v-model="inputItems"
                 v-show="false"
                 class="border border-gray block w-full md:w-1/2 h-20"></textarea>
@@ -28,7 +32,7 @@
                     cards</button>
                 <button class="bg-slate-100 rounded-md py-2 px-3 hover:bg-slate-50" @click="shuffleCards()"> shuffle
                     cards</button>
-                <button class="bg-slate-100 rounded-md py-2 px-3 hover:bg-slate-50" @click="toggleFlashCards()">Show
+                <button class="bg-slate-100 rounded-md py-2 px-3 hover:bg-slate-50" @click="showFlashCards()">Show
                     Cards</button>
             </div>
         </div>
@@ -49,11 +53,11 @@
             </table>
         </div>
     </div>
-    <div class="fixed flex inset-0 bg-black bg-opacity-30" @click.self="toggleFlashCards()" v-if="showCards">
+    <div class="fixed flex inset-0 bg-black bg-opacity-30" @click.self="hideFlashCards()" v-if="showCards">
         <button class="px-3" @click="itemsController.prev()">&lt;</button>
 
         <div style="min-height: 11rem;" class="md:w-1/3 w-full h-auto m-auto rounded-md bg-slate-100 flex px-10 py-6 text-2xl text-center relative"
-            @click.self="frontShow = !frontShow">
+            @click.self="frontShow = !frontshow">
             <div class="absolute top-1 left-0 right-0 flex px-3">
                 <span class="text-sm">
                     {{ getPosition + 1 }} / {{ getCards.length + 1 }}
@@ -62,7 +66,7 @@
                     <span v-if="frontShow">Front</span>
                     <span v-else>Back</span>
                 </p>
-                <button class="text-sm" @click="toggleFlashCards()">x</button>
+                <button class="text-sm" @click="hideFlashCards()">x</button>
             </div>
             <div class="m-auto">
 
@@ -102,6 +106,8 @@ const onePress = ref(false)
 const showCards = ref(false)
 
 const showOnlyHighlight = ref(false)
+const autoClick = ref(false)
+const autoClickInterval = ref(0)
 
 const getCards = computed(() => {
     if(showOnlyHighlight.value === false) {
@@ -178,7 +184,20 @@ onBeforeUnmount(() => {
     document.removeEventListener('keydown', detect)
     document.addEventListener('touchstart', preventZoom)
 })
-const toggleFlashCards = _ => showCards.value = !showCards.value
+const showFlashCards = _ => {
+    showCards.value = !showCards.value
+
+    if(autoClick.value) {
+        autoClickInterval.value = setInterval(() => {
+            itemsController.next()
+        }, 3000);
+    }
+}
+
+const hideFlashCards = () => {
+    showCards.value = false
+    try { clearInterval(autoClickInterval.value) } catch (error) {}
+}
 
 const flashPosition = () => {
     if(showOnlyHighlight.value === false) {
@@ -250,7 +269,7 @@ const detect = (event = KeyboardEvent) => {
     }
 
     if (event.code === 'Escape' && showCards.value === true) {
-        toggleFlashCards()
+        hideFlashCards()
     }
 
     if (event.code === 'KeyH' || event.code === 'KeyA') {
